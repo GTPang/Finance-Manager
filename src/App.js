@@ -14,7 +14,7 @@ function App() {
         <Route path="/budget" element={<Budget />} />
         <Route path="/sign-in" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path="*" element={<Navigate to="/dashboard" />} />
+        <Route path="*" element={<Navigate to="/sign-in" />} />
       </Routes>
     </BrowserRouter>
   );
