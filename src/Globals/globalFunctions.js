@@ -1,10 +1,9 @@
 import axios from "axios";
-import { useParams } from "react-router-dom";
 
 const token = sessionStorage.getItem("token");
 
 const axiosInstance = axios.create({
-    baseURL: baseURL,
+    baseURL: process.env.REACT_APP_BASE_URL,
     headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
@@ -14,9 +13,7 @@ const axiosInstance = axios.create({
 // All Categories Routes
 
 // Get Category
-export const getCategories = async () => {
-    const id = useParams();
-
+export const getCategories = async (id) => {
     try {
         const response = await axiosInstance.get(`/categories/${id}`)
         if (response) {
@@ -42,8 +39,7 @@ export const createCategories = async (accountId, categoryName) => {
 }
 
 // Update Category
-export const updateCategory = async (parsedData) => {
-    const id = useParams();
+export const updateCategory = async (id, parsedData) => {
     try {
         const response = await axiosInstance.put(`/categories/update-category/${id}`, parsedData)
         if (response) {
@@ -55,8 +51,7 @@ export const updateCategory = async (parsedData) => {
 }
 
 // Delete Category
-export const deleteCategory = async (accountId) => {
-    const id = useParams();
+export const deleteCategory = async (id, accountId) => {
     const parsedData = { account_id: accountId };
     try {
         const response = await axiosInstance.put(`/categories/delete-category/${id}`, parsedData)
@@ -75,8 +70,7 @@ export const deleteCategory = async (accountId) => {
 // All Transactions Routes
 
 // Get Transactions
-export const getTransactions = async () => {
-    const id = useParams();
+export const getTransactions = async (id) => {
 
     try {
         const response = await axiosInstance.get(`/transactions/${id}`)
@@ -102,8 +96,7 @@ export const createTransaction = async (accountId, amount, type, categoryId, des
 }
 
 // Update Transaction
-export const updateTransaction = async (parsedData) => {
-    const id = useParams();
+export const updateTransaction = async (id, parsedData) => {
     try {
         const response = await axiosInstance.put(`/transactions/update-transaction/${id}`, parsedData)
         if (response) {
@@ -115,8 +108,7 @@ export const updateTransaction = async (parsedData) => {
 }
 
 // Delete Transaction
-export const deleteTransaction = async (accountId) => {
-    const id = useParams();
+export const deleteTransaction = async (id, accountId) => {
     const parsedData = { account_id: accountId };
     try {
         const response = await axiosInstance.put(`/transactions/delete-transaction/${id}`, parsedData)

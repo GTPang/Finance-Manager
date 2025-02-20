@@ -45,11 +45,11 @@ function SideNav() {
                         </NavLink>
                     </li>
                     <li className="nav-item">
-                        <NavLink className="nav-link " to="/expenses">
+                        <NavLink className="nav-link " to={`/transactions/${user.userid}`}>
                             <div className="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                                 <i className="ni ni-calendar-grid-58 text-dark text-sm opacity-10" />
                             </div>
-                            <span className="nav-link-text ms-1">Expenses</span>
+                            <span className="nav-link-text ms-1">Transactions</span>
                         </NavLink>
                     </li>
                     <li className="nav-item">
@@ -61,7 +61,7 @@ function SideNav() {
                         </NavLink>
                     </li>
                     <li className="nav-item">
-                        <NavLink className="nav-link " to="/budget">
+                        <NavLink className="nav-link " to={`/budget/${user.userid}`}>
                             <div className="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                                 <i className="ni ni-app text-dark text-sm opacity-10" />
                             </div>

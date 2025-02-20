@@ -15,7 +15,7 @@ router.get('/:id', authenticateUser, async (req, res) => {
         if (row.length === 0) {
             return res.status(404).json({ status: 404, error: "No categories found!" })
         }
-        res.status(200).json({ status: 200, budgets: row })
+        res.status(200).json({ status: 200, details: row })
     }
     catch (err) {
         console.log(err);
