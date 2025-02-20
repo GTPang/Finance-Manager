@@ -56,7 +56,7 @@ function Login() {
                                                 </div>
                                                 <div className="mb-3">
                                                     <input
-                                                        type="email"
+                                                        type="password"
                                                         className="form-control form-control-lg"
                                                         placeholder="Password"
                                                         aria-label="Password"

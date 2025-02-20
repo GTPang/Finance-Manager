@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react'
 import Footer from './Components/Footer'
 import NavBar from './Components/NavBar'
 import SideNav from './Components/SideNav'
-import { useDispatch, useSelector } from 'react-redux'
-import { getCategories, getTransactions } from '../Globals/globalFunctions'
+import { useSelector } from 'react-redux'
+import { getTransactions } from '../Globals/globalFunctions'
 import { useParams } from 'react-router-dom'
-import { allCategories } from '../Redux/categorySlice'
+import { CategoryDetails } from './Hooks/CategoryDetails'
+import { toast } from 'react-toastify'
+import { ToastConfig } from '../Globals/globalMetaData'
 
 function Transactions() {
+    const { fetchAllCategories } = CategoryDetails();
     const [filteredTransactions, setFilteredTransactions] = useState([]);
     const [initialData, setInitialData] = useState([]);
     const [filters, setFilters] = useState({
@@ -17,22 +20,20 @@ function Transactions() {
         endDate: ""
     });
     const { id } = useParams();
-    const dispatch = useDispatch();
     const categoryList = useSelector((state) => state.category.categories)
 
     const fetchAllTransactions = async () => {
         const data = await getTransactions(id);
         if (data.status === 200) {
             setInitialData(data.transactions);
+        } else {
+            toast.error(data.error, ToastConfig)
+            console.log(data.error);
+
         }
     }
 
-    const fetchAllCategories = async () => {
-        const data = await getCategories(id);
-        if (data.status === 200) {
-            dispatch(allCategories({ categories: data.details }))
-        }
-    }
+
 
     const filterTransactions = (initialData, { type, category, startDate, endDate }) => {
         return initialData.filter(data => {
@@ -40,14 +41,15 @@ function Transactions() {
             if (type && data.type !== type) return false;
 
             const dataDate = new Date(data.date);
+            const dataDateUTC = new Date(dataDate.getUTCFullYear(), dataDate.getUTCMonth(), dataDate.getUTCDate());
             if (startDate) {
                 const startUTC = new Date(new Date(startDate).getUTCFullYear(), new Date(startDate).getUTCMonth(), new Date(startDate).getUTCDate());
-                if (dataDate < startUTC) return false;
+                if (dataDateUTC < startUTC) return false;
             }
 
             if (endDate) {
                 const endUTC = new Date(new Date(endDate).getUTCFullYear(), new Date(endDate).getUTCMonth(), new Date(endDate).getUTCDate());
-                if (dataDate > endUTC) return false;
+                if (dataDateUTC > endUTC) return false;
             }
 
             return true;
@@ -169,7 +171,7 @@ function Transactions() {
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <span className={`badge badge-sm bg-gradient-${item.amount === "income" ? "success" : "danger"}`}>
+                                                            <span className={`text-xxs badge badge-sm bg-gradient-${item.amount === "income" ? "success" : "danger"}`}>
                                                                 {item.type}
                                                             </span>
                                                         </td>

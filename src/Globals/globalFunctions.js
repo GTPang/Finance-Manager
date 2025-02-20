@@ -1,13 +1,20 @@
 import axios from "axios";
 
-const token = sessionStorage.getItem("token");
-
 const axiosInstance = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
     headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
+        "Content-Type": "application/json"
     }
+})
+
+axiosInstance.interceptors.request.use((config) => {
+    const token = sessionStorage.getItem("token");
+    if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`
+    }
+    return config;
+}, (error) => {
+    return Promise.reject(error);
 })
 
 // All Categories Routes
@@ -71,14 +78,13 @@ export const deleteCategory = async (id, accountId) => {
 
 // Get Transactions
 export const getTransactions = async (id) => {
-
     try {
         const response = await axiosInstance.get(`/transactions/${id}`)
         if (response) {
             return response.data;
         }
     } catch (err) {
-        return err;
+        return err.data;
     }
 }
 
@@ -91,7 +97,7 @@ export const createTransaction = async (accountId, amount, type, categoryId, des
             return response.data;
         }
     } catch (err) {
-        return err;
+        return err.data;
     }
 }
 
@@ -103,7 +109,7 @@ export const updateTransaction = async (id, parsedData) => {
             return response.data;
         }
     } catch (err) {
-        return err;
+        return err.data;
     }
 }
 
@@ -116,10 +122,65 @@ export const deleteTransaction = async (id, accountId) => {
             return response.data;
         }
     } catch (err) {
-        return err;
+        return err.data;
     }
 }
 
 // All Transactions Routes
 
 // -------------------------
+
+// All Budget Routes
+
+// Get Budget
+export const getBudgets = async (id) => {
+
+    try {
+        const response = await axiosInstance.get(`/budgets/${id}`)
+        if (response) {
+            return response.data;
+        }
+    } catch (err) {
+        return err.data;
+    }
+}
+
+// Create Budget
+export const createBudget = async (accountId, categoryId, amount, date_start, date_end) => {
+    const parsedData = { account_id: accountId, category_id: categoryId, amount: amount, date_start: date_start, date_end: date_end };
+    try {
+        const response = await axiosInstance.post(`/budgets/create-budget`, parsedData)
+        if (response) {
+            return response.data;
+        }
+    } catch (err) {
+        return err.data;
+    }
+}
+
+// Update Budget
+export const updateBudget = async (id, parsedData) => {
+    try {
+        const response = await axiosInstance.put(`/budgets/update-budget/${id}`, parsedData)
+        if (response) {
+            return response.data;
+        }
+    } catch (err) {
+        return err.data;
+    }
+}
+
+// Delete Budget
+export const deleteBudget = async (id, accountId) => {
+    const parsedData = { account_id: accountId };
+    try {
+        const response = await axiosInstance.put(`/budgets/delete-budget/${id}`, parsedData)
+        if (response) {
+            return response.data;
+        }
+    } catch (err) {
+        return err.data;
+    }
+}
+
+// All Budget Routes

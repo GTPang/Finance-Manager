@@ -11,7 +11,7 @@ router.get('/:id', authenticateUser, async (req, res) => {
     }
 
     try {
-        const [row] = await db.query('SELECT * FROM budgets WHERE account_id = ?', [id]);
+        const [row] = await db.query('SELECT b.*, c.name AS category_name FROM budgets b JOIN categories c ON b.category_id = c.id WHERE b.account_id = ?', [id]);
         if (row.length === 0) {
             return res.status(404).json({ status: 404, error: "No budgets found!" })
         }
