@@ -1,7 +1,9 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 
 function SideNav() {
+    const user = useSelector((state) => state.user);
     return (
         <aside
             className="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 "
@@ -25,7 +27,7 @@ function SideNav() {
                         className="navbar-brand-img h-100"
                         alt="main_logo"
                     />
-                    <span className="ms-1 font-weight-bold">Creative Tim</span>
+                    <span className="ms-1 font-weight-bold">Welcome, {user.username}</span>
                 </a>
             </div>
             <hr className="horizontal dark mt-0" />

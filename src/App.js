@@ -4,6 +4,7 @@ import Login from './Pages/Login';
 import SignUp from './Pages/SignUp';
 import Expenses from './Pages/Expenses';
 import Budget from './Pages/Budget';
+import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="*" element={<Navigate to="/sign-in" />} />
       </Routes>
+      <ToastContainer />
     </BrowserRouter>
   );
 }

@@ -24,7 +24,7 @@ router.get('/:id', authenticateUser, async (req, res) => {
 });
 
 router.post('/create-transaction', authenticateUser, async (req, res) => {
-    const { account_id, amount, type, category, description } = req.body;
+    const { account_id, amount, type, category_id, description } = req.body;
     let { date } = req.body;
 
     if (!account_id) {
@@ -37,7 +37,7 @@ router.post('/create-transaction', authenticateUser, async (req, res) => {
     }
 
     try {
-        const response = await db.query(`INSERT INTO transactions(account_id, amount, type, category, description, date) VALUES(?, ?, ?, ?, ?, ?)`, [account_id, amount, type, category, description, date]);
+        const response = await db.query(`INSERT INTO transactions(account_id, amount, type, category_id, description, date) VALUES(?, ?, ?, ?, ?, ?)`, [account_id, amount, type, category_id, description, date]);
         if (response.affectedRows === 0) {
             return res.status(404).json({ status: 404, error: "Invalid Data Type" })
         }
@@ -51,7 +51,7 @@ router.post('/create-transaction', authenticateUser, async (req, res) => {
 
 router.put('/update-transaction/:id', authenticateUser, async (req, res) => {
     const { id } = req.params;
-    const { account_id, amount, type, category, description } = req.body;
+    const { account_id, amount, type, category_id, description } = req.body;
     let { date } = req.body;
 
     if (!id) {
@@ -65,12 +65,48 @@ router.put('/update-transaction/:id', authenticateUser, async (req, res) => {
     }
 
     try {
-        const response = await db.query(`UPDATE transactions SET amount = ?, type = ?, category = ?, description = ?, date = ? WHERE id = ? AND account_id = ?`, [amount, type, category, description, date, id, account_id]);
+        let query = 'UPDATE transactions SET ';
+        let values = [];
+        let setClauses = [];
+
+        if (amount) {
+            setClauses.push('amount = ?');
+            values.push(amount);
+        }
+
+        if (type) {
+            setClauses.push('type = ?');
+            values.push(type);
+        }
+
+        if (category_id) {
+            setClauses.push('category_id = ?');
+            values.push(category_id);
+        }
+
+        if (description) {
+            setClauses.push('description = ?');
+            values.push(description);
+        }
+
+        if (date) {
+            setClauses.push('date = ?');
+            values.push(date);
+        }
+
+        if (setClauses.length === 0) {
+            return res.status(400).json({ status: 400, error: "No valid fields provided!" })
+        }
+
+        query = query + setClauses.join(', ') + ' WHERE id = ? AND account_id = ?';
+        values.push(id, account_id);
+
+        const response = await db.query(query, values);
         if (response.affectedRows === 0) {
             return res.status(404).json({ status: 404, error: "Invalid Data Type" })
         }
         const [row] = await db.query('SELECT * FROM transactions WHERE id = ?', [id]);
-        res.status(200).json({ status: 200, message: "Transation created successfully", transaction: row[0] })
+        res.status(200).json({ status: 200, message: "Transation updated successfully", transaction: row[0] })
     }
     catch (err) {
         console.log(err);

@@ -1,6 +1,34 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { ToastConfig } from '../Globals/globalMetaData';
+import { userDetails } from '../Redux/userSlice';
+import { useDispatch } from 'react-redux';
+import { login } from '../Globals/auth';
 
 function Login() {
+    const [userName, setUserName] = useState("");
+    const [passWord, setPassWord] = useState("");
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleSignIn = async () => {
+        if (!userName || !passWord) {
+            toast.error('Username OR Password Missing!', ToastConfig);
+        } else {
+            try {
+                const data = await login(userName, passWord);
+                if (data.status === 200) {
+                    dispatch(userDetails({ userid: data.user_details.id, username: data.user_details.username, token: data.token }))
+                    sessionStorage.setItem('token', data.token);
+                    navigate('/dashboard');
+                }
+            } catch (err) {
+                toast.error(err, ToastConfig);
+            }
+        }
+    }
+
     return (
         <>
             <main className="main-content  mt-0">
@@ -22,6 +50,8 @@ function Login() {
                                                         className="form-control form-control-lg"
                                                         placeholder="Email"
                                                         aria-label="Email"
+                                                        value={userName}
+                                                        onChange={(e) => setUserName(e.target.value)}
                                                     />
                                                 </div>
                                                 <div className="mb-3">
@@ -30,22 +60,15 @@ function Login() {
                                                         className="form-control form-control-lg"
                                                         placeholder="Password"
                                                         aria-label="Password"
+                                                        value={passWord}
+                                                        onChange={(e) => setPassWord(e.target.value)}
                                                     />
-                                                </div>
-                                                <div className="form-check form-switch">
-                                                    <input
-                                                        className="form-check-input"
-                                                        type="checkbox"
-                                                        id="rememberMe"
-                                                    />
-                                                    <label className="form-check-label" htmlFor="rememberMe">
-                                                        Remember me
-                                                    </label>
                                                 </div>
                                                 <div className="text-center">
                                                     <button
                                                         type="button"
                                                         className="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0"
+                                                        onClick={handleSignIn}
                                                     >
                                                         Sign in
                                                     </button>
@@ -55,12 +78,12 @@ function Login() {
                                         <div className="card-footer text-center pt-0 px-lg-2 px-1">
                                             <p className="mb-4 text-sm mx-auto">
                                                 Don't have an account?
-                                                <a
-                                                    href="javascript:;"
+                                                <Link
+                                                    to="/sign-up"
                                                     className="text-primary text-gradient font-weight-bold"
                                                 >
                                                     Sign up
-                                                </a>
+                                                </Link>
                                             </p>
                                         </div>
                                     </div>
