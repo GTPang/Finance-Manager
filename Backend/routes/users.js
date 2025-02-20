@@ -17,7 +17,7 @@ router.get('/:id', authenticateUser, async (req, res) => {
         return res.status(200).json({ status: 200, user: row[0] })
     } catch (err) {
         console.log(err);
-        return res.status(500).json({ status: 500, error: "Internal server error!" })
+        return res.status(500).json({ status: 500, error: err })
     }
 })
 
@@ -37,6 +37,30 @@ router.put('/user-update/:id', authenticateUser, async (req, res) => {
         console.log(err);
         res.status(500).json(err)
     }
+})
+
+router.delete('/delete-user/:id', authenticateUser, async (req, res) => {
+    const { id } = req.params;
+    const { email } = req.body;
+    if (!id) {
+        return res.status(403).json({ status: 403, error: "Invalid user id!" })
+    }
+
+    try {
+        const [row] = await db.query(`SELECT * FROM users WHERE id = ? OR email = ?`, [id, email]);
+        if (row.length < 0) {
+            return res.status(404).json({ status: 404, error: "Incorrect email ID!" })
+        }
+        const response = await db.query(`DELETE FROM users WHERE id = ?`, [id])
+        if (response.affectedRows === 0) {
+            return res.status(404).json({ status: 403, error: "User not found!" })
+        }
+        return res.status(200).json({ status: 200, message: "User deleted successfully!" })
+    } catch (err) {
+        console.log(err);
+        return res.status(500).json({ status: 500, error: err })
+    }
+
 })
 
 module.exports = router;
