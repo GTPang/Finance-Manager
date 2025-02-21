@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import Footer from './Components/Footer'
 import NavBar from './Components/NavBar'
 import SideNav from './Components/SideNav'
@@ -17,6 +17,7 @@ function Budget() {
     const [budgetArr, setBudgetArr] = useState([]);
     const [filteredBudgetArr, setFilteredBudgetArr] = useState([]);
     const categoryList = useSelector((state) => state.category.categories);
+    const budgetAlert = useSelector((state) => state.user.budgetAlert);
     const [filters, setFilters] = useState({
         category: "",
         startDate: "",
@@ -28,7 +29,11 @@ function Budget() {
         const data = await getBudgets(id);
         if (data.status === 200) {
             setBudgetArr(data.budgets);
-            dispatch(userBudget({ budgets: data.budgets }))
+            try {
+                dispatch(userBudget({ budgets: data.budgets }));
+            } catch (err) {
+                console.log(err);
+            }
         }
     }
 
@@ -81,7 +86,6 @@ function Budget() {
         const filteredBudget = filterData(budgetArr, filters);
         setFilteredBudgetArr(filteredBudget)
     }, [budgetArr, filters])
-
     return (
         <>
             <div className="min-height-300 bg-dark position-absolute w-100" />
@@ -172,21 +176,33 @@ function Budget() {
                                                         </td>
                                                         <td className="align-middle text-center">
                                                             <div className="d-flex align-items-center justify-content-center">
-                                                                <span className="me-2 text-xs font-weight-bold">
-                                                                    60%
-                                                                </span>
-                                                                <div>
-                                                                    <div className="progress">
-                                                                        <div
-                                                                            className="progress-bar bg-gradient-info"
-                                                                            role="progressbar"
-                                                                            aria-valuenow={60}
-                                                                            aria-valuemin={0}
-                                                                            aria-valuemax={100}
-                                                                            style={{ width: "60%" }}
-                                                                        />
-                                                                    </div>
-                                                                </div>
+                                                                {
+                                                                    budgetAlert
+                                                                        ?.filter((eachBudget) => eachBudget.id === item.id)
+                                                                        .map((eachBudget) => {
+                                                                            const percent = (eachBudget.remaining / eachBudget.amount) * 100;
+                                                                            return (
+                                                                                <>
+                                                                                    <span className="me-2 text-xs font-weight-bold">
+                                                                                        {Math.floor(percent, 0)}%
+                                                                                    </span>
+                                                                                    <div>
+                                                                                        <div className="progress">
+                                                                                            <div
+                                                                                                className="progress-bar bg-gradient-info"
+                                                                                                role="progressbar"
+                                                                                                aria-valuenow={Math.floor(percent, 0)}
+                                                                                                aria-valuemin={0}
+                                                                                                aria-valuemax={100}
+                                                                                                style={{ width: `${percent}%` }}
+                                                                                            />
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </>
+                                                                            )
+                                                                        })
+                                                                }
+
                                                             </div>
                                                         </td>
                                                         <td className="align-middle">

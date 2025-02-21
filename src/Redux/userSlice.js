@@ -22,6 +22,8 @@ const userSlice = createSlice({
         },
         userBudget: (state, action) => {
             state.budgets = action.payload.budgets;
+        },
+        userBudgetAlert: (state, action) => {
             state.budgetAlert = action.payload.budgetAlert
         },
         logout: (state) => {
@@ -30,5 +32,5 @@ const userSlice = createSlice({
     },
 });
 
-export const { userDetails, userTransac, userBudget, logout } = userSlice.actions;
+export const { userDetails, userTransac, userBudget, userBudgetAlert, logout } = userSlice.actions;
 export default userSlice.reducer;

@@ -29,7 +29,11 @@ function Transactions() {
         const data = await getTransactions(id);
         if (data.status === 200) {
             setInitialData(data.transactions);
-            dispatch(userTransac({ transactions: data.transactions }));
+            try {
+                dispatch(userTransac({ transactions: data.transactions }));
+            } catch (err) {
+                console.log(err)
+            }
         } else {
             toast.error(data.error, ToastConfig)
             console.log(data.error);

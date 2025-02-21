@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { allCategories } from '../../Redux/categorySlice';
 import { toast } from 'react-toastify';
 import { ToastConfig } from '../../Globals/globalMetaData';
-import { userBudget } from '../../Redux/userSlice';
+import { userBudget, userBudgetAlert } from '../../Redux/userSlice';
 
 export function CategoryDetails() {
     const dispatch = useDispatch();
@@ -25,7 +25,7 @@ export function CategoryDetails() {
     const fetchBudgetAlert = async () => {
         const data = await getBudgetAlert(userid);
         if (data.status === 200) {
-            dispatch(userBudget({ budgetAlert: data.budgetAlert }));
+            dispatch(userBudgetAlert({ budgetAlert: data.budgets }));
             for (let eachBudget of data.budgets) {
                 if (eachBudget.status !== 'Within Budget') {
                     toast.error(`You are about to exceed budget for ${eachBudget.category_name}!`, ToastConfig);

@@ -53,14 +53,6 @@ function SideNav() {
                         </NavLink>
                     </li>
                     <li className="nav-item">
-                        <NavLink className="nav-link " to="/billing">
-                            <div className="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                                <i className="ni ni-credit-card text-dark text-sm opacity-10" />
-                            </div>
-                            <span className="nav-link-text ms-1">Billing</span>
-                        </NavLink>
-                    </li>
-                    <li className="nav-item">
                         <NavLink className="nav-link " to={`/budget/${user.userid}`}>
                             <div className="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                                 <i className="ni ni-app text-dark text-sm opacity-10" />
@@ -72,14 +64,6 @@ function SideNav() {
                         <h6 className="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">
                             Account pages
                         </h6>
-                    </li>
-                    <li className="nav-item">
-                        <a className="nav-link " href="../pages/profile.html">
-                            <div className="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                                <i className="ni ni-single-02 text-dark text-sm opacity-10" />
-                            </div>
-                            <span className="nav-link-text ms-1">Profile</span>
-                        </a>
                     </li>
                     <li className="nav-item">
                         <NavLink className="nav-link " to="/sign-in">

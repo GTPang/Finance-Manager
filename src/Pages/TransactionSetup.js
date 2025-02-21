@@ -83,8 +83,6 @@ function TransactionSetup({ pageType }) {
         }
         console.log(storedTransactions.find((transaction) => parseInt(transaction.id) === parseInt(id)));
         console.log(id);
-
-
     }, [storedTransactions])
 
 

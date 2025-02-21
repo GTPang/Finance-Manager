@@ -14,7 +14,7 @@ function BudgetSetup({ pageType }) {
     const categoryList = useSelector((state) => state.category.categories);
     const accountId = useSelector((state) => state.user.userid);
     const storedBudgets = useSelector((state) => state.user.budgets);
-    const [transacDetails, setTransacDetails] = useState({
+    const [budgetDetails, setBudgetDetails] = useState({
         account_id: accountId,
         amount: "",
         category_id: "",
@@ -26,31 +26,31 @@ function BudgetSetup({ pageType }) {
 
     const handleInputData = (e) => {
         const { name, value } = e.target;
-        setTransacDetails(prevDetails => ({
+        setBudgetDetails(prevDetails => ({
             ...prevDetails,
             [name]: value
         }))
     }
 
     const createNewBudget = async () => {
-        if (!transacDetails.amount) {
+        if (!budgetDetails.amount) {
             toast.error('Amount is required', ToastConfig);
             return
         }
-        if (!transacDetails.category_id) {
+        if (!budgetDetails.category_id) {
             toast.error('Category is required', ToastConfig);
             return
         }
-        if (!transacDetails.date_start) {
+        if (!budgetDetails.date_start) {
             toast.error('Date Start is required', ToastConfig);
             return
         }
-        if (!transacDetails.date_end) {
+        if (!budgetDetails.date_end) {
             toast.error('Date End is required', ToastConfig);
             return
         }
         try {
-            const response = await createBudget(transacDetails.account_id, transacDetails.category_id, transacDetails.amount, transacDetails.date_start, transacDetails.date_end);
+            const response = await createBudget(budgetDetails.account_id, budgetDetails.category_id, budgetDetails.amount, budgetDetails.date_start, budgetDetails.date_end);
             if (response.status === 200) {
                 toast.success('Budget Created Successfully!', ToastConfig);
                 navigate(`/budget/${accountId}`)
@@ -65,7 +65,7 @@ function BudgetSetup({ pageType }) {
 
     const editExistingBudget = async () => {
         try {
-            const response = await updateBudget(id, transacDetails.account_id, transacDetails.category_id, transacDetails.amount, transacDetails.date_start, transacDetails.date_end);
+            const response = await updateBudget(id, budgetDetails.account_id, budgetDetails.category_id, budgetDetails.amount, budgetDetails.date_start, budgetDetails.date_end);
             if (response.status === 200) {
                 toast.success('Budget Updated Successfully!', ToastConfig);
                 navigate(`/budget/${accountId}`)
@@ -80,10 +80,11 @@ function BudgetSetup({ pageType }) {
 
     useEffect(() => {
         if (storedBudgets && id) {
-            setTransacDetails(storedBudgets.find((budget) => parseInt(budget.id) === parseInt(id)));
+            setBudgetDetails(storedBudgets.find((budget) => parseInt(budget.id) === parseInt(id)));
         }
-        console.log(storedBudgets.find((budget) => parseInt(budget.id) === parseInt(id)));
-        console.log(id);
+        console.log(storedBudgets);
+
+        // console.log(storedBudgets.find((budget) => parseInt(budget.id) === parseInt(id)));
     }, [storedBudgets])
 
 
@@ -122,7 +123,7 @@ function BudgetSetup({ pageType }) {
                                                     className="form-control"
                                                     type="number"
                                                     name="amount"
-                                                    value={transacDetails?.amount}
+                                                    value={budgetDetails?.amount}
                                                     onChange={handleInputData}
                                                 />
                                             </div>
@@ -132,7 +133,7 @@ function BudgetSetup({ pageType }) {
                                                 <label htmlFor="example-text-input" className="form-control-label">
                                                     Category
                                                 </label>
-                                                <select className='form-control' style={{ textTransform: 'capitalize' }} name="category_id" value={transacDetails?.category_id} onChange={handleInputData}>
+                                                <select className='form-control' style={{ textTransform: 'capitalize' }} name="category_id" value={budgetDetails?.category_id} onChange={handleInputData}>
                                                     <option value={""}>Select Option</option>
                                                     {categoryList && categoryList.map((item, index) =>
                                                         (<option key={index} value={item.id}>{item.name}</option>)
@@ -149,7 +150,7 @@ function BudgetSetup({ pageType }) {
                                                     className="form-control"
                                                     type="date"
                                                     name='date_start'
-                                                    value={transacDetails?.date}
+                                                    value={budgetDetails?.date_start}
                                                     onChange={handleInputData}
                                                 />
                                             </div>
@@ -163,7 +164,7 @@ function BudgetSetup({ pageType }) {
                                                     className="form-control"
                                                     type="date"
                                                     name='date_end'
-                                                    value={transacDetails?.date}
+                                                    value={budgetDetails?.date_end}
                                                     onChange={handleInputData}
                                                 />
                                             </div>
