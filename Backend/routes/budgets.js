@@ -124,4 +124,43 @@ router.delete('/delete-budget/:id', authenticateUser, async (req, res) => {
     }
 })
 
+router.get('/budget-alert/:id', authenticateUser, async (req, res) => {
+    const { id } = req.params;
+    const threshold = 0.8;
+
+    try {
+        const budgetResult = await db.query('SELECT b.*, c.name AS category_name FROM budgets b JOIN categories c ON b.category_id = c.id WHERE b.account_id = ?', [id]);
+        if (budgetResult.length === 0) {
+            return res.status(404).json({ status: 404, error: "No budgets found!" })
+        }
+
+        let alerts = [];
+
+        for (const budget of budgetResult[0]) {
+            const transactionResult = await db.query(
+                'SELECT COALESCE(SUM(amount), 0) AS total_spent FROM transactions WHERE category_id = ? AND date BETWEEN ? AND ? AND account_id = ? AND type = ?',
+                [budget.category_id, budget.date_start, budget.date_end, id, 'expense']
+            );
+
+            const totalSpent = transactionResult[0][0]?.total_spent;
+
+            budget.amount_spent = totalSpent;
+            budget.remaining = budget.amount - totalSpent;
+
+            if (budget.remaining / budget.amount < threshold) {
+                budget.status = 'Near Budget';
+            } else {
+                budget.status = 'Within Budget';
+            }
+
+        }
+
+        res.status(200).json({ status: 200, budgets: budgetResult[0] })
+
+    } catch (err) {
+        console.error(err),
+            res.status(500).json({ status: 500, error: err })
+    }
+})
+
 module.exports = router;

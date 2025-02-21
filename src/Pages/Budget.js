@@ -3,13 +3,16 @@ import Footer from './Components/Footer'
 import NavBar from './Components/NavBar'
 import SideNav from './Components/SideNav'
 import { CategoryDetails } from './Hooks/CategoryDetails'
-import { useParams } from 'react-router-dom'
-import { getBudgets } from '../Globals/globalFunctions'
-import { useSelector } from 'react-redux'
+import { Link, useParams } from 'react-router-dom'
+import { deleteBudget, getBudgets } from '../Globals/globalFunctions'
+import { useDispatch, useSelector } from 'react-redux'
+import { ToastConfig } from '../Globals/globalMetaData'
+import { toast } from 'react-toastify'
+import { userBudget } from '../Redux/userSlice'
 
 
 function Budget() {
-    const { fetchAllCategories } = CategoryDetails();
+    const { fetchAllCategories, fetchBudgetAlert } = CategoryDetails();
     const { id } = useParams();
     const [budgetArr, setBudgetArr] = useState([]);
     const [filteredBudgetArr, setFilteredBudgetArr] = useState([]);
@@ -19,11 +22,13 @@ function Budget() {
         startDate: "",
         endDate: ""
     })
+    const dispatch = useDispatch();
 
     const fetchAllBudgets = async () => {
         const data = await getBudgets(id);
         if (data.status === 200) {
             setBudgetArr(data.budgets);
+            dispatch(userBudget({ budgets: data.budgets }))
         }
     }
 
@@ -55,8 +60,20 @@ function Budget() {
         })
     }
 
+    const handleDeleteBudget = async (id, accountId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this budget?");
+        if (confirmDelete) {
+            const response = await deleteBudget(id, accountId);
+            if (response.status === 200) {
+                toast.success(response.message, ToastConfig);
+                fetchAllBudgets();
+            }
+        }
+    }
+
     useEffect(() => {
         fetchAllBudgets();
+        fetchBudgetAlert();
         fetchAllCategories();
     }, [])
 
@@ -79,7 +96,12 @@ function Budget() {
                             <div className="card mb-4">
                                 <div className="card-header pb-0">
                                     <div className='d-flex justify-content-between'>
-                                        <div><h6>Budget table</h6></div>
+                                        <div className='row'>
+                                            <div className='col-auto'><h6>All Budget Table</h6></div>
+                                            <div className='col-auto'>
+                                                <Link className="btn btn-primary btn-sm ms-auto" to="/budget-add">Create</Link>
+                                            </div>
+                                        </div>
                                         <div className='row gx-3'>
                                             <div className="col-auto">
                                                 <div className="form-group is-filled">
@@ -131,6 +153,7 @@ function Budget() {
                                                         Available
                                                     </th>
                                                     <th />
+                                                    <th />
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -167,8 +190,13 @@ function Budget() {
                                                             </div>
                                                         </td>
                                                         <td className="align-middle">
-                                                            <button className="btn btn-link text-secondary mb-0">
+                                                            <Link className="btn btn-link text-secondary mb-0" to={`/budget-edit/${item.id}`}>
                                                                 Edit
+                                                            </Link>
+                                                        </td>
+                                                        <td className="align-middle">
+                                                            <button className="btn btn-link text-secondary mb-0" onClick={() => handleDeleteBudget(item.id, id)}>
+                                                                Delete
                                                             </button>
                                                         </td>
                                                     </tr>

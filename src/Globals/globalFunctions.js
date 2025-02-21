@@ -27,7 +27,7 @@ export const getCategories = async (id) => {
             return response.data;
         }
     } catch (err) {
-        return err;
+        return err.response.data;
     }
 }
 
@@ -41,7 +41,7 @@ export const createCategories = async (accountId, categoryName) => {
             return response.data;
         }
     } catch (err) {
-        return err;
+        return err.response.data;
     }
 }
 
@@ -53,7 +53,7 @@ export const updateCategory = async (id, parsedData) => {
             return response.data;
         }
     } catch (err) {
-        return err;
+        return err.response.data;
     }
 }
 
@@ -66,7 +66,7 @@ export const deleteCategory = async (id, accountId) => {
             return response.data;
         }
     } catch (err) {
-        return err;
+        return err.response.data;
     }
 }
 
@@ -84,32 +84,33 @@ export const getTransactions = async (id) => {
             return response.data;
         }
     } catch (err) {
-        return err.data;
+        return err.response.data;
     }
 }
 
 // Create Transaction
 export const createTransaction = async (accountId, amount, type, categoryId, description, date) => {
-    const parsedData = { account_id: accountId, amount: amount, category_id: categoryId, description: description, date: date };
+    const parsedData = { account_id: accountId, amount: amount, type: type, category_id: categoryId, description: description, date: date };
     try {
         const response = await axiosInstance.post(`/transactions/create-transaction`, parsedData)
         if (response) {
             return response.data;
         }
     } catch (err) {
-        return err.data;
+        return err.response.data;
     }
 }
 
 // Update Transaction
-export const updateTransaction = async (id, parsedData) => {
+export const updateTransaction = async (id, accountId, amount, type, categoryId, description, date) => {
+    const parsedData = { account_id: accountId, amount: amount, type: type, category_id: categoryId, description: description, date: date };
     try {
         const response = await axiosInstance.put(`/transactions/update-transaction/${id}`, parsedData)
         if (response) {
             return response.data;
         }
     } catch (err) {
-        return err.data;
+        return err.response.data;
     }
 }
 
@@ -117,12 +118,16 @@ export const updateTransaction = async (id, parsedData) => {
 export const deleteTransaction = async (id, accountId) => {
     const parsedData = { account_id: accountId };
     try {
-        const response = await axiosInstance.put(`/transactions/delete-transaction/${id}`, parsedData)
+        const response = await axiosInstance.request({
+            method: 'DELETE',
+            url: `/transactions/delete-transaction/${id}`,
+            data: { ...parsedData }
+        })
         if (response) {
             return response.data;
         }
     } catch (err) {
-        return err.data;
+        return err.response.data;
     }
 }
 
@@ -141,7 +146,7 @@ export const getBudgets = async (id) => {
             return response.data;
         }
     } catch (err) {
-        return err.data;
+        return err.response.data;
     }
 }
 
@@ -154,19 +159,20 @@ export const createBudget = async (accountId, categoryId, amount, date_start, da
             return response.data;
         }
     } catch (err) {
-        return err.data;
+        return err.response.data;
     }
 }
 
 // Update Budget
-export const updateBudget = async (id, parsedData) => {
+export const updateBudget = async (id, accountId, categoryId, amount, date_start, date_end) => {
+    const parsedData = { account_id: accountId, category_id: categoryId, amount: amount, date_start: date_start, date_end: date_end };
     try {
         const response = await axiosInstance.put(`/budgets/update-budget/${id}`, parsedData)
         if (response) {
             return response.data;
         }
     } catch (err) {
-        return err.data;
+        return err.response.data;
     }
 }
 
@@ -174,12 +180,27 @@ export const updateBudget = async (id, parsedData) => {
 export const deleteBudget = async (id, accountId) => {
     const parsedData = { account_id: accountId };
     try {
-        const response = await axiosInstance.put(`/budgets/delete-budget/${id}`, parsedData)
+        const response = await axiosInstance.request({
+            method: 'DELETE',
+            url: `/budgets/delete-budget/${id}`,
+            data: { ...parsedData }
+        })
         if (response) {
             return response.data;
         }
     } catch (err) {
-        return err.data;
+        return err.response.data;
+    }
+}
+
+export const getBudgetAlert = async (accountId) => {
+    try {
+        const response = await axiosInstance.get(`/budgets/budget-alert/${accountId}`);
+        if (response) {
+            return response.data;
+        }
+    } catch (err) {
+        return err.response.data;
     }
 }
 

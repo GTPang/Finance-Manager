@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import Footer from './Components/Footer'
 import NavBar from './Components/NavBar'
 import SideNav from './Components/SideNav'
-import { useSelector } from 'react-redux'
-import { getTransactions } from '../Globals/globalFunctions'
-import { useParams } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { deleteTransaction, getTransactions } from '../Globals/globalFunctions'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { CategoryDetails } from './Hooks/CategoryDetails'
 import { toast } from 'react-toastify'
 import { ToastConfig } from '../Globals/globalMetaData'
+import { userTransac } from '../Redux/userSlice'
 
 function Transactions() {
     const { fetchAllCategories } = CategoryDetails();
@@ -21,19 +22,20 @@ function Transactions() {
     });
     const { id } = useParams();
     const categoryList = useSelector((state) => state.category.categories)
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const fetchAllTransactions = async () => {
         const data = await getTransactions(id);
         if (data.status === 200) {
             setInitialData(data.transactions);
+            dispatch(userTransac({ transactions: data.transactions }));
         } else {
             toast.error(data.error, ToastConfig)
             console.log(data.error);
 
         }
     }
-
-
 
     const filterTransactions = (initialData, { type, category, startDate, endDate }) => {
         return initialData.filter(data => {
@@ -64,6 +66,17 @@ function Transactions() {
         }));
     };
 
+    const handleDeleteTransaction = async (id, accountId) => {
+        const confirmDelete = window.confirm("Are you sure you want to delete this transaction?");
+        if (confirmDelete) {
+            const response = await deleteTransaction(id, accountId);
+            if (response.status === 200) {
+                toast.success(response.message, ToastConfig);
+                fetchAllTransactions();
+            }
+        }
+    }
+
     useEffect(() => {
         fetchAllTransactions();
         fetchAllCategories();
@@ -88,7 +101,12 @@ function Transactions() {
                             <div className="card mb-4">
                                 <div className="card-header pb-0">
                                     <div className='d-flex justify-content-between'>
-                                        <div><h6>All Transactions table</h6></div>
+                                        <div className='row'>
+                                            <div className='col-auto'><h6>All Transactions table</h6></div>
+                                            <div className='col-auto'>
+                                                <Link className="btn btn-primary btn-sm ms-auto" to="/transaction-add">Create</Link>
+                                            </div>
+                                        </div>
                                         <div className='row gx-3'>
                                             <div className="col-auto">
                                                 <div className="form-group is-filled">
@@ -151,11 +169,12 @@ function Transactions() {
                                                         Date & Time
                                                     </th>
                                                     <th />
+                                                    <th />
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {filteredTransactions.length > 0 ? filteredTransactions.map((item, index) => (
-                                                    <tr>
+                                                    <tr key={item.id}>
                                                         <td>
                                                             <div className="d-flex px-2">
                                                                 <div>
@@ -182,8 +201,13 @@ function Transactions() {
                                                             <p className="text-sm font-weight-bold mb-0">{new Date(item.date).toLocaleDateString()} - {new Date(item.date).toLocaleTimeString()}</p>
                                                         </td>
                                                         <td className="align-middle">
-                                                            <button className="btn btn-link text-secondary mb-0">
+                                                            <Link className="btn btn-link text-secondary mb-0" to={`/transaction-edit/${item.id}`}>
                                                                 Edit
+                                                            </Link>
+                                                        </td>
+                                                        <td className="align-middle">
+                                                            <button className="btn btn-link text-secondary mb-0" onClick={() => handleDeleteTransaction(item.id, id)}>
+                                                                Delete
                                                             </button>
                                                         </td>
                                                     </tr>
