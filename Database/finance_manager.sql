@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 20, 2025 at 02:22 PM
+-- Generation Time: Feb 21, 2025 at 11:45 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -90,7 +90,10 @@ CREATE TABLE `transactions` (
 INSERT INTO `transactions` (`id`, `account_id`, `amount`, `type`, `category_id`, `description`, `date`) VALUES
 (7, 5, 60, 'expense', 9, 'bus commute to office', '2025-02-20 09:30:00.000000'),
 (8, 5, 50, 'expense', 8, 'breakfast', '2025-02-20 09:50:00.000000'),
-(9, 5, 30, 'expense', 10, 'cigerrates', '2025-02-20 09:50:00.000000');
+(9, 5, 30, 'expense', 10, 'cigerrates', '2025-02-20 09:50:00.000000'),
+(10, 5, 30, 'expense', 10, 'ciggerates', '2025-02-21 10:30:00.000000'),
+(12, 5, 100, 'expense', 8, 'lunch outside', '2025-02-21 14:04:00.000000'),
+(20, 5, 2000, 'expense', 8, 'asdasdasdas', '2025-02-21 15:22:14.779000');
 
 -- --------------------------------------------------------
 
@@ -158,7 +161,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `budgets`
 --
 ALTER TABLE `budgets`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -170,7 +173,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `transactions`
 --
 ALTER TABLE `transactions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `users`
