@@ -87,8 +87,10 @@ function Transactions() {
     }, [])
 
     useEffect(() => {
-        const filteredExpenses = filterTransactions(initialData, filters);
-        setFilteredTransactions(filteredExpenses)
+        if (initialData.length > 0) {
+            const filteredExpenses = filterTransactions(initialData, filters);
+            setFilteredTransactions(filteredExpenses)
+        }
     }, [initialData, filters])
 
     return (
@@ -167,6 +169,9 @@ function Transactions() {
                                                         Type
                                                     </th>
                                                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                        Category
+                                                    </th>
+                                                    <th className="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                                         Description
                                                     </th>
                                                     <th className="text-uppercase text-secondary text-xxs font-weight-bolder text-center opacity-7 ps-2">
@@ -183,7 +188,7 @@ function Transactions() {
                                                             <div className="d-flex px-2">
                                                                 <div>
                                                                     <img
-                                                                        src="../assets/img/icons/dollar.png"
+                                                                        src="/Assets/img/icons/dollar.png"
                                                                         className="avatar avatar-sm rounded-circle me-2"
                                                                         alt="spotify"
                                                                     />
@@ -194,8 +199,13 @@ function Transactions() {
                                                             </div>
                                                         </td>
                                                         <td>
-                                                            <span className={`text-xxs badge badge-sm bg-gradient-${item.amount === "income" ? "success" : "danger"}`}>
+                                                            <span className={`text-xxs badge badge-sm bg-gradient-${item.type === "income" ? "success" : "danger"}`}>
                                                                 {item.type}
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <span className={`text-xs font-weight-bold`} style={{ textTransform: 'capitalize' }}>
+                                                                {item.category_name}
                                                             </span>
                                                         </td>
                                                         <td>

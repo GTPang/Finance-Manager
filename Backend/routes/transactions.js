@@ -11,7 +11,7 @@ router.get('/:id', authenticateUser, async (req, res) => {
     }
 
     try {
-        const [row] = await db.query(`SELECT * FROM transactions WHERE account_id =?`, [id]);
+        const [row] = await db.query(`SELECT *, c.name AS category_name FROM transactions LEFT JOIN categories c ON c.id = transactions.category_id WHERE transactions.account_id = ?`, [id]);
         if (row.length === 0) {
             return res.status(404).json({ status: 404, error: "No transactions found!" })
         }
