@@ -135,4 +135,36 @@ router.delete('/delete-transaction/:id', authenticateUser, async (req, res) => {
     }
 });
 
+
+// Get Today & Yestday's Expense / Income for a user 
+router.get('/gettodays:type/:id', authenticateUser, async (req, res) => {
+    const { type, id } = req.params;
+    if (!id) {
+        return res.status(404).json({ status: 400, error: "Invalid user id!" })
+    }
+    try {
+        const response = await db.query('CALL todayExpense(?, ?)', [id, type]);
+        res.status(200).json({ status: 200, todaysExpense: response[0][0][0].today_expense, yesterdaysExpense: response[0][1][0].yesterday_expense })
+    }
+    catch (err) {
+        res.status(500).json({ status: 500, error: err })
+    }
+})
+
+// Get This Month's Expense / Income for a user 
+router.get('/getthismonths:type/:id', authenticateUser, async (req, res) => {
+    const { type, id } = req.params;
+    if (!id) {
+        return res.status(404).json({ status: 400, error: "Invalid user id!" })
+    }
+    try {
+        const response = await db.query('CALL thisMonthExpense(?, ?)', [id, type]);
+        res.status(200).json({ status: 200, thisMonthExpense: response[0][0][0].this_month_expense })
+    }
+    catch (err) {
+        res.status(500).json({ status: 500, error: err })
+    }
+})
+
+
 module.exports = router;

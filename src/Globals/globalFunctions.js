@@ -205,3 +205,28 @@ export const getBudgetAlert = async (accountId) => {
 }
 
 // All Budget Routes
+
+// User Info Routes
+export const getTodaysExpense = async (type, accountId) => {
+    try {
+        const response = await axiosInstance.get(`/transactions/gettodays${type}/${accountId}`);
+        if (response) {
+            return response.data;
+        }
+    } catch (err) {
+        return err.response.data;
+    }
+}
+
+export const getThisMonthsExpense = async (type, accountId) => {
+    try {
+        const response = await axiosInstance.get(`/transactions/getthismonths${type}/${accountId}`);
+        if (response) {
+            return response.data;
+        }
+    } catch (err) {
+        return err.response.data;
+    }
+}
+
+// User Info Routes

@@ -1,9 +1,63 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import SideNav from './Components/SideNav'
 import NavBar from './Components/NavBar'
 import Footer from './Components/Footer'
+import { getThisMonthsExpense, getTodaysExpense } from '../Globals/globalFunctions';
+import { useSelector } from 'react-redux';
 
 function Dashboard() {
+    const userid = useSelector((state) => state.user.userid);
+    const [periodicExpense, setPeriodicExpense] = useState({
+        yesterday: 0,
+        today: 0,
+        thisMonth: 0,
+    });
+    const [periodicIncome, setPeriodicIncome] = useState({
+        yesterday: 0,
+        today: 0,
+        thisMonth: 0,
+    });
+
+    useEffect(() => {
+        fetchTodayExpense();
+        fetchTodayIncome();
+    }, [userid])
+
+    const fetchTodayExpense = async () => {
+        try {
+            const dayResponse = await getTodaysExpense('expense', userid);
+            const monthResponse = await getThisMonthsExpense('expense', userid);
+            if (dayResponse && monthResponse) {
+                setPeriodicExpense({
+                    yesterday: dayResponse.yesterdaysExpense,
+                    today: dayResponse.todaysExpense,
+                    thisMonth: monthResponse.thisMonthExpense
+                });
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+    const fetchTodayIncome = async () => {
+        try {
+            const dayResponse = await getTodaysExpense('income', userid);
+            const monthResponse = await getThisMonthsExpense('income', userid);
+
+            if (dayResponse && monthResponse) {
+                setPeriodicIncome({
+                    yesterday: dayResponse.yesterdaysExpense,
+                    today: dayResponse.todaysExpense,
+                    thisMonth: monthResponse.thisMonthExpense
+                });
+            }
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
     return (
         <>
             <div className="min-height-300 bg-dark position-absolute w-100" />
@@ -23,10 +77,10 @@ function Dashboard() {
                                                 <p className="text-sm mb-0 text-uppercase font-weight-bold">
                                                     Today's Expense
                                                 </p>
-                                                <h5 className="font-weight-bolder">$53,000</h5>
+                                                <h5 className="font-weight-bolder">Rs {periodicExpense.today}</h5>
                                                 <p className="mb-0">
                                                     <span className="text-success text-sm font-weight-bolder me-1">
-                                                        +55%
+                                                        +{periodicExpense.yesterday == 0 ? 100 : Math.floor(((periodicExpense.today - periodicExpense.yesterday) / periodicExpense.yesterday) * 100)}%
                                                     </span>
                                                     since yesterday
                                                 </p>
@@ -50,10 +104,11 @@ function Dashboard() {
                                                 <p className="text-sm mb-0 text-uppercase font-weight-bold">
                                                     Today's Income
                                                 </p>
-                                                <h5 className="font-weight-bolder">$500</h5>
+                                                <h5 className="font-weight-bolder">Rs {periodicIncome.today}</h5>
                                                 <p className="mb-0">
                                                     <span className="text-success text-sm font-weight-bolder me-1">
-                                                        +3%
+                                                        +{periodicIncome.yesterday == 0 ? (periodicIncome.today == 0 ? 0 : 100) :
+                                                            Math.floor(((periodicIncome.today - periodicIncome.yesterday) / periodicIncome.yesterday) * 100)}%
                                                     </span>
                                                     since last week
                                                 </p>
@@ -77,7 +132,7 @@ function Dashboard() {
                                                 <p className="text-sm mb-0 text-uppercase font-weight-bold">
                                                     This Month's Expense
                                                 </p>
-                                                <h5 className="font-weight-bolder">$10,000</h5>
+                                                <h5 className="font-weight-bolder">Rs {periodicExpense.thisMonth}</h5>
                                                 <p className="mb-0">
                                                     <span className="text-danger text-sm font-weight-bolder me-1">
                                                         -2%
@@ -104,7 +159,7 @@ function Dashboard() {
                                                 <p className="text-sm mb-0 text-uppercase font-weight-bold">
                                                     This Month's Income
                                                 </p>
-                                                <h5 className="font-weight-bolder">$103,430</h5>
+                                                <h5 className="font-weight-bolder">Rs {periodicIncome?.thisMonth}</h5>
                                                 <p className="mb-0">
                                                     <span className="text-success text-sm font-weight-bolder me-1">
                                                         +5%
